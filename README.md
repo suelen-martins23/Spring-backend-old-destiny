@@ -1,2 +1,3 @@
-# gamecms-old-destiny
-backend para servidor de old destiny (With Your D...)
+#Web Services para Old Destiny
+## Projeto Spring Boot
+## Ainda em construção
