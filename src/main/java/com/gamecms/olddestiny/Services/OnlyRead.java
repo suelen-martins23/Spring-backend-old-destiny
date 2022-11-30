@@ -30,23 +30,27 @@ public class OnlyRead {
         return m.find();
     }
 
-    public static String getRankingPlayer(Path path) throws IOException {
-                PlayerRanking[] rankings = {};
-                List<String> linhas = Files.readAllLines(path);
+    public static String getRankingPlayer(Path path) {
+        try {
+            PlayerRanking[] rankings = {};
+            List<String> linhas = Files.readAllLines(path);
 
-                linhas.forEach(
-                        n->{
-                            String[] linhaPlayer = StringUtils.split(n, " ");
-                            PlayerRanking player = new PlayerRanking();
-                            player.posicao = linhaPlayer[0];
-                            player.nome = linhaPlayer[1];
-                            player.level = linhaPlayer[2];
-                            player.classe = linhaPlayer[3];
-                            rankings[ (int) Arrays.stream(rankings).count() ] = player;
-                        }
-                );
-
-                return new Gson().toJson(rankings);
+            linhas.forEach(
+                    n->{
+                        String[] linhaPlayer = StringUtils.split(n, " ");
+                        PlayerRanking player = new PlayerRanking();
+                        player.posicao = linhaPlayer[0];
+                        player.nome = linhaPlayer[1];
+                        player.level = linhaPlayer[2];
+                        player.classe = linhaPlayer[3];
+                        rankings[ (int) Arrays.stream(rankings).count() ] = player;
+                    }
+            );
+            return new Gson().toJson(rankings);
+        }
+        catch (Exception ex){
+            return new Gson().toJson(ex);
+        }
     }
 
 }
