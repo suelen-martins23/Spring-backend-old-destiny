@@ -1,6 +1,7 @@
 package com.gamecms.olddestiny.Controllers;
 
 import com.gamecms.olddestiny.Dto.Conta;
+import com.gamecms.olddestiny.Dto.GenericReturn;
 import com.gamecms.olddestiny.Services.GoogleRecaptcha;
 import com.gamecms.olddestiny.Services.OnlyRead;
 import com.gamecms.olddestiny.Services.Write;
@@ -26,10 +27,14 @@ public class ApisController {
 
     @GetMapping(value = "register/{jsonConta}", produces = {"application/json"})
     @ResponseBody
-    public String register(@PathVariable("jsonConta") String jsonConta){
+    public ResponseEntity register(@PathVariable("jsonConta") String jsonConta){
         Gson gson = new Gson();
         Conta conta = gson.fromJson(jsonConta, Conta.class);
-        return gson.toJson(writeSE.createAccount(conta));
+        GenericReturn contaSalva = writeSE.createAccount(conta);
+
+
+        return ResponseEntity.ok(gson.toJson(contaSalva));
+
     }
 
 

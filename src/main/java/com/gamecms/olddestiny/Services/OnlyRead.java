@@ -27,6 +27,31 @@ public class OnlyRead {
         return m.find();
     }
 
+    public static String isCorrectPassword(String accountName, String senha) {
+        try {
+            Path path = Paths.get("root" + "/DBSRV/run/Account/" + getInitialChar(accountName) + accountName);
+            List<String> linhas = Files.readAllLines(path);
+
+            String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
+            if(!linhaDaSenha.isEmpty()){
+                Conta conta = new Conta();
+                conta.login = accountName;
+                conta.senha = senha;
+                conta.liberarLogin = true;
+                return new Gson().toJson(conta);
+
+            }
+
+            throw new Exception("Senha incorreta");
+        }
+        catch (Exception ex){
+            GenericReturn mensagem = new GenericReturn();
+            mensagem.descricao = ex.getMessage();
+            mensagem.status = false;
+            return new Gson().toJson(mensagem);
+        }
+    }
+
     public static String getRankingPlayer(Path path) {
         try {
             PlayerRanking[] rankings = {};
@@ -49,34 +74,6 @@ public class OnlyRead {
             return new Gson().toJson(ex);
         }
     }
-
-
-    public static String getPassword(String accountName, String senha) {
-       try {
-           Path path = Paths.get("root" + "/DBSRV/run/Account/" + getInitialChar(accountName) + accountName);
-           List<String> linhas = Files.readAllLines(path);
-
-           String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
-           if(!linhaDaSenha.isEmpty()){
-               Conta conta = new Conta();
-               conta.login = accountName;
-               conta.senha = senha;
-               conta.liberarLogin = true;
-               return new Gson().toJson(conta);
-
-           }
-
-           throw new Exception("Senha incorreta");
-       }
-       catch (Exception ex){
-           GenericReturn mensagem = new GenericReturn();
-           mensagem.descricao = ex.getMessage();
-           mensagem.status = false;
-           return new Gson().toJson(mensagem);
-       }
-    }
-
-
 
 
 }
