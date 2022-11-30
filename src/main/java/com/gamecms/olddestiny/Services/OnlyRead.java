@@ -57,19 +57,20 @@ public class OnlyRead {
            List<String> linhas = Files.readAllLines(path);
 
            String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
-           if(linhaDaSenha.isEmpty()){
-               throw new Exception("Senha incorreta");
-           }else{
-                Conta conta = new Conta();
-                conta.login = accountName;
-                conta.senha = senha;
-                conta.liberarLogin = true;
-                return new Gson().toJson(conta);
+           if(!linhaDaSenha.isEmpty()){
+               Conta conta = new Conta();
+               conta.login = accountName;
+               conta.senha = senha;
+               conta.liberarLogin = true;
+               return new Gson().toJson(conta);
+
            }
+
+           throw new Exception("Senha incorreta");
        }
        catch (Exception ex){
            GenericReturn mensagem = new GenericReturn();
-           mensagem.descricao = "Senha incorreta";
+           mensagem.descricao = ex.getMessage();
            mensagem.status = false;
            return new Gson().toJson(mensagem);
        }
