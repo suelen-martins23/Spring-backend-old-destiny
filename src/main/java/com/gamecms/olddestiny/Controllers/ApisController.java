@@ -32,8 +32,8 @@ public class ApisController {
         Conta conta = gson.fromJson(jsonConta, Conta.class);
         GenericReturn contaSalva = writeSE.createAccount(conta);
 
-
         return ResponseEntity.ok(gson.toJson(contaSalva));
+
 
     }
 
