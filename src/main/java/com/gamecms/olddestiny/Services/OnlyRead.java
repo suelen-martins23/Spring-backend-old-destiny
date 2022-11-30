@@ -43,7 +43,7 @@ public class OnlyRead {
                         player.nome = linhaPlayer[1];
                         player.level = linhaPlayer[2];
                         player.classe = linhaPlayer[3];
-                        rankings[ (int) Arrays.stream(rankings).count() ] = player;
+                        rankings[ (int) Arrays.stream(rankings).count() + 1] = player;
                     }
             );
             return new Gson().toJson(rankings);
