@@ -1,24 +1,21 @@
 package com.gamecms.olddestiny.Services;
 
+import com.gamecms.olddestiny.Dto.Conta;
+import com.gamecms.olddestiny.Dto.GenericReturn;
 import com.gamecms.olddestiny.Dto.PlayerRanking;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.*;
 
 @Service
 public class OnlyRead {
-    File conta;
-
 
     public static String getInitialChar(String accountName){
         return isEtcAccount(accountName) ? "ETC" : accountName.substring(0,1);
@@ -52,5 +49,33 @@ public class OnlyRead {
             return new Gson().toJson(ex);
         }
     }
+
+
+    public static String getPassword(String accountName, String senha) {
+       try {
+           Path path = Paths.get("root" + "/DBSRV/run/Account/" + getInitialChar(accountName) + accountName);
+           List<String> linhas = Files.readAllLines(path);
+
+           String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
+           if(linhaDaSenha.isEmpty()){
+               throw new Exception("Senha incorreta");
+           }else{
+                Conta conta = new Conta();
+                conta.login = accountName;
+                conta.senha = senha;
+                conta.liberarLogin = true;
+                return new Gson().toJson(conta);
+           }
+       }
+       catch (Exception ex){
+           GenericReturn mensagem = new GenericReturn();
+           mensagem.descricao = "Senha incorreta";
+           mensagem.status = false;
+           return new Gson().toJson(mensagem);
+       }
+    }
+
+
+
 
 }

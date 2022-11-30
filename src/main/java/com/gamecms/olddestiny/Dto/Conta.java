@@ -7,6 +7,8 @@ public class Conta {
     public String numerica;
     public  String recaptchaPublicKey;
 
+    public boolean liberarLogin;
+
     public  String getTxtImportAccount(){
         String contaTxt ="";
         contaTxt = contaTxt + this.login + "\n";
