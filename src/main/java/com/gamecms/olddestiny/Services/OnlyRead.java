@@ -21,22 +21,15 @@ public class OnlyRead {
         return isEtcAccount(accountName) ? "ETC" : accountName.substring(0,1);
     }
 
-    public boolean isEtcAccount(String accountName){    if (accountName == null || accountName.length() == 0) {
-        // Se a String for nula ou vazia, retorna false
-        return false;
-    }
-
+    public boolean isEtcAccount(String accountName){
         char primeiraLetra = accountName.charAt(0);
         String regex = "[^a-zA-Z]";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(Character.toString(primeiraLetra));
 
-        // Se a primeira letra contém um caractere especial ou um número, retorna true
         if (matcher.find() || Character.isDigit(primeiraLetra)) {
             return true;
         }
-
-        // Se a primeira letra não contém um caractere especial ou um número, retorna false
         return false;
     }
 
@@ -58,10 +51,7 @@ public class OnlyRead {
             throw new Exception("Senha incorreta");
         }
         catch (Exception ex){
-            GenericReturn mensagem = new GenericReturn();
-            mensagem.descricao = ex.getMessage();
-            mensagem.status = false;
-            return new Gson().toJson(mensagem);
+            return new Gson().toJson( GenericReturn.builder().isSucess(false).descricao("Erro").build());
         }
     }
 

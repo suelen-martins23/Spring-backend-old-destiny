@@ -28,7 +28,7 @@ public class ApisController {
     Gson gson;
 
 
-    @GetMapping(value = "register", produces = {"application/json"})
+    @PostMapping(value = "register", produces = {"application/json"})
     @ResponseBody
     public ResponseEntity<String> register(@RequestBody String jsonConta){
         try{
