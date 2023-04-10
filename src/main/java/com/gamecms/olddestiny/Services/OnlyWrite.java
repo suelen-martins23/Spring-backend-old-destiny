@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Service
-public class Write {
+public class OnlyWrite {
     private String secretKey;
 
     private String importAccountDir = "C:/Users/Eliezer/Desktop/dirTest";

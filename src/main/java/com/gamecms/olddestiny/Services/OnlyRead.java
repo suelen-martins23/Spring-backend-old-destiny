@@ -17,17 +17,30 @@ import java.util.regex.*;
 @Service
 public class OnlyRead {
 
-    public static String getInitialChar(String accountName){
+    public String getInitialChar(String accountName){
         return isEtcAccount(accountName) ? "ETC" : accountName.substring(0,1);
     }
 
-    public static boolean isEtcAccount(String accountName){
-        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(accountName);
-        return m.find();
+    public boolean isEtcAccount(String accountName){    if (accountName == null || accountName.length() == 0) {
+        // Se a String for nula ou vazia, retorna false
+        return false;
     }
 
-    public static String isCorrectPassword(String accountName, String senha) {
+        char primeiraLetra = accountName.charAt(0);
+        String regex = "[^a-zA-Z]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(Character.toString(primeiraLetra));
+
+        // Se a primeira letra contém um caractere especial ou um número, retorna true
+        if (matcher.find() || Character.isDigit(primeiraLetra)) {
+            return true;
+        }
+
+        // Se a primeira letra não contém um caractere especial ou um número, retorna false
+        return false;
+    }
+
+    private String isCorrectPassword(String accountName, String senha) {
         try {
             Path path = Paths.get("root" + "/DBSRV/run/Account/" + getInitialChar(accountName) + accountName);
             List<String> linhas = Files.readAllLines(path);
@@ -52,7 +65,7 @@ public class OnlyRead {
         }
     }
 
-    public static String getRankingPlayer(Path path) {
+    private  String getRankingPlayer(Path path) {
         try {
             PlayerRanking[] rankings = {};
             List<String> linhas = Files.readAllLines(path);
