@@ -28,20 +28,17 @@ public class ApisController {
     Gson gson;
 
 
-    @GetMapping(value = "register/{jsonConta}", produces = {"application/json"})
+    @GetMapping(value = "register", produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity<String> register(@PathVariable("jsonConta") String jsonConta){
+    public ResponseEntity<String> register(@RequestBody String jsonConta){
         try{
             Conta conta = gson.fromJson(jsonConta, Conta.class);
             GenericReturn contaSalva = writeSE.createAccount(conta);
             return ResponseEntity.ok(gson.toJson(contaSalva));
         }
        catch (Exception ex){
-            GenericReturn erro = new GenericReturn();
-            erro.setDescricao("Erro");
-            erro.setStatus(false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                gson.toJson(erro)
+                gson.toJson(GenericReturn.builder().isSucess(false).descricao("Erro").build())
             );
        }
 
