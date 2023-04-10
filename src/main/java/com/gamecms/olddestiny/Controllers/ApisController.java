@@ -7,6 +7,7 @@ import com.gamecms.olddestiny.Services.OnlyRead;
 import com.gamecms.olddestiny.Services.OnlyWrite;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,16 +24,26 @@ public class ApisController {
     @Autowired
     GoogleRecaptcha recaptchaSE;
 
+    @Autowired
+    Gson gson;
+
 
     @GetMapping(value = "register/{jsonConta}", produces = {"application/json"})
     @ResponseBody
-    public ResponseEntity register(@PathVariable("jsonConta") String jsonConta){
-        Gson gson = new Gson();
-        Conta conta = gson.fromJson(jsonConta, Conta.class);
-        GenericReturn contaSalva = writeSE.createAccount(conta);
-
-        return ResponseEntity.ok(gson.toJson(contaSalva));
-
+    public ResponseEntity<String> register(@PathVariable("jsonConta") String jsonConta){
+        try{
+            Conta conta = gson.fromJson(jsonConta, Conta.class);
+            GenericReturn contaSalva = writeSE.createAccount(conta);
+            return ResponseEntity.ok(gson.toJson(contaSalva));
+        }
+       catch (Exception ex){
+            GenericReturn erro = new GenericReturn();
+            erro.setDescricao("Erro");
+            erro.setStatus(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                gson.toJson(erro)
+            );
+       }
 
     }
 
