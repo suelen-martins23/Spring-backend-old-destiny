@@ -11,8 +11,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class OlddestinyApplicationTests {
@@ -43,8 +42,18 @@ class OlddestinyApplicationTests {
 	@Test
 	public void deveriaRetornarUmaListaDeRanking(){
 		Path path = Paths.get(rankingTxt);
-		System.out.println("o dir é : " + rankingTxt);
 		assertNotNull(onlyRead.getRankingPlayer(path));
+	}
+
+	@Test
+	public void deveriaVerificarSeASenhaEstaCorreta(){
+		assertFalse(onlyRead.isCorrectPassword("aeli2931", "testando4").contains("Erro"));
+	}
+
+
+	@Test
+	public void deveriaPassarSeASenhaEstaIncorreta(){
+		assertTrue(onlyRead.isCorrectPassword("aelix29312", "testando4").contains("Erro"));
 	}
 
 }

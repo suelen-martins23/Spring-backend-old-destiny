@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,23 +38,25 @@ public class OnlyRead {
         return false;
     }
 
-    private String isCorrectPassword(String accountName, String senha) {
+    public String isCorrectPassword(String accountName, String senha) {
         try {
-            Path path = Paths.get(dirAccount + getInitialChar(accountName) + accountName);
-            List<String> linhas = Files.readAllLines(path);
+                Path path = Paths.get(dirAccount + getInitialChar(accountName).toUpperCase() + "\\" + accountName);
+                if(!Files.exists(path)){
+                    throw new FileSystemNotFoundException("Conta não encontrada");
+                }
 
-            String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
-            
-            if(!linhaDaSenha.isEmpty()){
+                List<String> linhas = Files.readAllLines(path);
+                String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
+
+                if(linhaDaSenha.isEmpty()) {
+                    throw new IllegalArgumentException("Senha incorreta");
+                }
+
                 Conta conta = new Conta();
                 conta.login = accountName;
                 conta.senha = senha;
                 conta.liberarLogin = true;
                 return new Gson().toJson(conta);
-
-            }
-
-            throw new Exception("Senha incorreta");
         }
         catch (Exception ex){
             return new Gson().toJson( GenericReturn.builder().isSucess(false).descricao("Erro").build());
@@ -71,7 +74,7 @@ public class OnlyRead {
             return null;
         }
         catch (Exception ex){
-            return new Gson().toJson(ex);
+            return new Gson().toJson(GenericReturn.builder().isSucess(false).descricao(ex.getMessage()).build());
         }
     }
 
