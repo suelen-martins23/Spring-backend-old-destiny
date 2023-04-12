@@ -4,6 +4,7 @@ import com.gamecms.olddestiny.Dto.Conta;
 import com.gamecms.olddestiny.Dto.GenericReturn;
 import com.gamecms.olddestiny.Dto.PlayerRanking;
 import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -12,10 +13,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.*;
 
 @Service
 public class OnlyRead {
+    @Value("${wydserver.dbaccount}")
+    String dirAccount;
 
     public String getInitialChar(String accountName){
         return isEtcAccount(accountName) ? "ETC" : accountName.substring(0,1);
@@ -35,10 +39,11 @@ public class OnlyRead {
 
     private String isCorrectPassword(String accountName, String senha) {
         try {
-            Path path = Paths.get("root" + "/DBSRV/run/Account/" + getInitialChar(accountName) + accountName);
+            Path path = Paths.get(dirAccount + getInitialChar(accountName) + accountName);
             List<String> linhas = Files.readAllLines(path);
 
             String linhaDaSenha = linhas.stream().filter(n -> n.contains(senha)).toString();
+            
             if(!linhaDaSenha.isEmpty()){
                 Conta conta = new Conta();
                 conta.login = accountName;
@@ -55,23 +60,15 @@ public class OnlyRead {
         }
     }
 
-    private  String getRankingPlayer(Path path) {
+    public  String getRankingPlayer(Path path) {
         try {
-            PlayerRanking[] rankings = {};
-            List<String> linhas = Files.readAllLines(path);
+            Optional<List<String>> linhas = Optional.of(Files.readAllLines(path));
 
-            linhas.forEach(
-                    n->{
-                        String[] linhaPlayer = StringUtils.split(n, " ");
-                        PlayerRanking player = new PlayerRanking();
-                        player.posicao = linhaPlayer[0];
-                        player.nome = linhaPlayer[1];
-                        player.level = linhaPlayer[2];
-                        player.classe = linhaPlayer[3];
-                        rankings[ (int) Arrays.stream(rankings).count() + 1] = player;
-                    }
-            );
-            return new Gson().toJson(rankings);
+            if(linhas.isPresent()){
+                return new Gson().toJson(linhas);
+            }
+
+            return null;
         }
         catch (Exception ex){
             return new Gson().toJson(ex);

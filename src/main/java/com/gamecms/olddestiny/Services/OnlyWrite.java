@@ -19,20 +19,22 @@ public class OnlyWrite {
 
 
     private GenericReturn consistirConta(String accountName, String recaptchaFromFront){
-        GenericReturn retorno = new GenericReturn();
-        retorno.status = true;
-        retorno.descricao = "Consistido com sucesso.";
+        GenericReturn retorno = GenericReturn.builder().isSucess(true).descricao("Consistido com sucesso.").build();
+
 
 
         if(Files.exists(Paths.get(importAccountDir + "/" + accountName))){
-            retorno.status = false;
-            retorno.descricao = "Essa conta já existe.";
+            retorno = GenericReturn.builder()
+                    .isSucess(false)
+                    .descricao("Essa conta não existe.").build();
+
             return retorno;
         }
 
         if(!GoogleRecaptcha.isCaptchaSolved(secretKey, recaptchaFromFront)){
-            retorno.status = false;
-            retorno.descricao = "Marque corretamente o captcha.";
+            retorno = GenericReturn.builder()
+                    .isSucess(false)
+                    .descricao("Marque corretamente o captcha.").build();
             return retorno;
         }
 
@@ -45,21 +47,21 @@ public class OnlyWrite {
         String recaptchaFromFront = conta.recaptchaPublicKey;
 
         GenericReturn retorno = consistirConta(accountName, recaptchaFromFront);
-        if(!retorno.status){
+        if(!retorno.isSucess()){
             return retorno;
         }
        try {
            File fileConta = new File(importAccountDir + "/" + accountName);
            Files.write(Paths.get(importAccountDir + "/" + accountName), conta.getTxtImportAccount().getBytes(StandardCharsets.UTF_8));
-           retorno.status = true;
+           retorno.isSucess = true;
            retorno.descricao = "Conta criada com sucesso.";
        }
        catch (Exception ex){
            if(Files.exists(Paths.get(importAccountDir + "/" + accountName))){
-               retorno.status = false;
+               retorno.isSucess = false;
                retorno.descricao = "Essa conta já existe, stack: " + ex.getMessage();
            }else {
-               retorno.status = false;
+               retorno.isSucess = false;
                retorno.descricao = ex.getMessage();
            }
        }
