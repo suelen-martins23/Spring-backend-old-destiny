@@ -16,8 +16,7 @@ Este componente é responsável pela validação do Google reCAPTCHA. Ele verifi
 💻 Exemplo de Uso
 Abaixo está um exemplo de como criar uma nova conta usando a API do serviço:
 
-makefile
-Copy code
+<PRE>
 POST /api/v1/register HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
@@ -29,6 +28,9 @@ Postman-Token: 7a8a29d3-7b22-96e1-cb7f-d06391a49278
     "email": "jogador1@email.com",
     "password": "senha123"
 }
+    
+</PRE>
+
 🚀 Tecnologias Utilizadas
 Spring Boot
 Spring Fox
