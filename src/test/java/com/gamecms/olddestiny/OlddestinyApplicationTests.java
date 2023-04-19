@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.gamecms.olddestiny.Services.*;
 
-import java.io.File;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,6 +22,8 @@ class OlddestinyApplicationTests {
 
 	@Value("${wydserver.rankingtxt}")
 	String rankingTxt;
+
+
 
 
 	@Test
@@ -55,5 +55,6 @@ class OlddestinyApplicationTests {
 	public void deveriaPassarSeASenhaEstaIncorreta(){
 		assertTrue(onlyRead.isCorrectPassword("aelix29312", "testando4").contains("Erro"));
 	}
+
 
 }
