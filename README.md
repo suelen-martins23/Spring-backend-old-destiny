@@ -37,5 +37,3 @@ Postman-Token: 7a8a29d3-7b22-96e1-cb7f-d06391a49278
 🟡 Google reCAPTCHA
 🟡 Gson
 
-<h2>📖 Documentação</h2>
-Para acessar a documentação da API, basta executar o projeto e acessar o link http://localhost:8080/swagger-ui.html. A documentação foi criada com o Spring Fox, que utiliza o Swagger para criar uma interface interativa com a API.
