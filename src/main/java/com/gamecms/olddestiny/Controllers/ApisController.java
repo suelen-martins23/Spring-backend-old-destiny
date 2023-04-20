@@ -44,7 +44,18 @@ public class ApisController {
 
     }
 
-
+    @GetMapping(value = "getDadosConta", produces = "application/json")
+    public ResponseEntity<String> getDadosConta(@RequestBody String login){
+        try {
+            String dados = readSE.getDadosConta(login);
+            return ResponseEntity.ok(dados);
+        }
+        catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    gson.toJson(GenericReturn.builder().isSucess(false).descricao("Erro").build())
+            );
+        }
+    }
 
 
 

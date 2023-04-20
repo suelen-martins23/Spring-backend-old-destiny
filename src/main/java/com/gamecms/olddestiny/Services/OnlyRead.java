@@ -3,6 +3,7 @@ package com.gamecms.olddestiny.Services;
 import com.gamecms.olddestiny.Dto.Conta;
 import com.gamecms.olddestiny.Dto.GenericReturn;
 import com.gamecms.olddestiny.Dto.PlayerRanking;
+import com.gamecms.olddestiny.Model.ContaModel;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.*;
 
@@ -77,6 +79,13 @@ public class OnlyRead {
             return new Gson().toJson(GenericReturn.builder().isSucess(false).descricao(ex.getMessage()).build());
         }
     }
+    public String getDadosConta(String conta){
+        ContaModel model = new ContaModel(dirAccount);
+        model.read("admin", "full");
+        Map<String, Object> dados = model.accountChar(3);
+        return new Gson().toJson(dados);
+    }
+
 
 
 }
