@@ -33,7 +33,6 @@ Postman-Token: 7a8a29d3-7b22-96e1-cb7f-d06391a49278
 
 <h2>🚀 Tecnologias Utilizadas</h2>
 🟡 Spring Boot
-🟡 Spring Fox
 🟡 Java
 🟡 Google reCAPTCHA
 🟡 Gson
