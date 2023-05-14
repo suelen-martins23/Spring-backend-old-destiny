@@ -44,8 +44,8 @@ public class ApisController {
 
     }
 
-    @GetMapping(value = "getDadosConta", produces = "application/json")
-    public ResponseEntity<String> getDadosConta(@RequestBody String login){
+    @GetMapping(value = "getDadosConta/{login}", produces = "application/json")
+    public ResponseEntity<String> getDadosConta(@PathVariable String login){
         try {
             String dados = readSE.getDadosConta(login);
             return ResponseEntity.ok(dados);

@@ -1,15 +1,10 @@
 package com.gamecms.olddestiny.Model;
 
-import java.io.*;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import com.gamecms.olddestiny.Utils.ContaUtils;
+import static com.gamecms.olddestiny.Utils.ContaUtils.hex2num;
 
 
 /*
@@ -19,126 +14,39 @@ import java.util.Map;
     um objeto - modelo - relacional para ORM até o momento
 */
 public class ContaModel {
-    private String path = "./";
+    private String dirAccount = "./";
     public String account;
-    public String data;
+    public String stringAccount;
 
-    public ContaModel(String path) {
-        if (!new java.io.File(path).isDirectory()) {
+    public byte[] bytesAccount;
+
+    public ContaModel(String dirAccount) {
+        if (!new java.io.File(dirAccount).isDirectory()) {
             return;
         }
-        this.path = path;
-    }
-
-    public static String lerArquivo(String nomeArquivo) throws IOException {
-        File arquivo = new File(nomeArquivo);
-        FileInputStream fis = new FileInputStream(arquivo);
-
-        // Cria um CharsetDecoder com um fallback para o Charset default do sistema
-        CharsetDecoder decoder = Charset.forName("ISO-8859-1").newDecoder();
-        decoder.onMalformedInput(CodingErrorAction.REPLACE);
-        decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-
-        // Cria um CharsetEncoder para substituir caracteres não legíveis por espaços em branco
-        CharsetEncoder encoder = Charset.forName("Windows-1252").newEncoder();
-        encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-        encoder.replaceWith(" ".getBytes());
-
-        // Lê o arquivo usando o CharsetDecoder
-        InputStreamReader isr = new InputStreamReader(fis, decoder);
-        BufferedReader br = new BufferedReader(isr);
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            // Usa o CharsetEncoder para substituir caracteres não legíveis
-            byte[] encoded = encoder.encode(CharBuffer.wrap(line)).array();
-            String decoded = new String(encoded, decoder.charset());
-            sb.append(decoded);
-            sb.append(System.lineSeparator());
-        }
-        fis.close();
-
-        return sb.toString();
-    }
-
-    public boolean read(String account, String mode) {
-        String path = this.path + "/" + (mode != "mob" ? account.charAt(0) + "/" : "") + account;
-        if (!new java.io.File(path).exists()) {
-            return false;
-        }
-        this.account = account;
-        BufferedReader reader = null;
-        try {
-            this.data = lerArquivo(path);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public String hex2bin(String hex) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < hex.length(); i += 2) {
-            String str = hex.substring(i, i + 2);
-            sb.append((char) Integer.parseInt(str, 16));
-        }
-        return sb.toString();
+        this.dirAccount = dirAccount;
     }
 
 
-    public Map<String, Object> accountChar(int number) {
-        return readMob(this.data.substring(416 + (1512 * number), 416 + (1512 * number) + 1512));
+
+    // nao entendi essa parte
+    public Map<String, Object> getAccountChar(int number) {
+        return readMob(this.stringAccount.substring(416 + (1512 * number), 416 + (1512 * number) + 1512));
     }
-    public int hex2num(String data) {
-        return hexdec(invhex(data));
-    }
-    public String invhex(String data) {
-        int t = data.length();
-        if (t % 2 != 0) {
-            data = "0" + data;
-            t++;
-        }
-        String d = "";
-        for (int i = 0; i < t; i += 2) {
-            d += data.substring((t - i - 2), (t - i));
-        }
-        return d;
-    }
-    public static int hexdec(String hexString) {
-        int dec = 0;
-        hexString = hexString.replace("0x", "").toLowerCase();
-        int len = hexString.length();
-        for (int i = 0; i < len; i++) {
-            char c = hexString.charAt(i);
-            int digit = Character.digit(c, 16);
-            dec += digit * Math.pow(16, len - i - 1);
-        }
-        return dec;
-    }
-    public Map<String, Integer> get_item(String data) {
-        String item = data.substring(0, 4);
-        if (item.equals("0000")) {
+
+    // TODO: REVISAR TEM ALGO ERRADO NA LEITURA
+    // ISSO E PARA CADA PERSONAGEM
+    protected Map<String, Object> readMob(String data) {
+        if (data.length() != 1512) {
             return null;
         }
-        Map<String, Integer> itemMap = new HashMap<>();
-        itemMap.put("item", hex2num(item));
-        itemMap.put("att1", hex2num(data.substring(4, 6)));
-        itemMap.put("val1", hex2num(data.substring(6, 8)));
-        itemMap.put("att2", hex2num(data.substring(8, 10)));
-        itemMap.put("val2", hex2num(data.substring(10, 12)));
-        itemMap.put("att3", hex2num(data.substring(12, 14)));
-        itemMap.put("val3", hex2num(data.substring(14, 16)));
-        return itemMap;
-    }
-    public Map<String, Object> readMob(String data) {
 
-        String name = (data.substring(0, 16)).trim();
-        if (name.isEmpty()) {
-            return null;
-        }
+        //String name = hex2bin(data.substring(0, 24));
+        //if (name.equals("")) {
+      //      return null;
+       // }
         Map<String, Object> attr = new HashMap<>();
-        attr.put("name", name);
+        //attr.put("name", name);
         attr.put("race", hex2num(data.substring(32, 34)));
         attr.put("merchant", hex2num(data.substring(34, 36)));
         attr.put("class", hex2num(data.substring(40, 42)));
@@ -153,11 +61,7 @@ public class ContaModel {
         attr.put("int", hex2num(data.substring(108, 112)));
         attr.put("dex", hex2num(data.substring(112, 116)));
         attr.put("con", hex2num(data.substring(116, 120)));
-        List<Integer> skill = new ArrayList<>();
-        skill.add(hex2num(data.substring(120, 122)));
-        skill.add(hex2num(data.substring(122, 124)));
-        skill.add(hex2num(data.substring(124, 126)));
-        skill.add(hex2num(data.substring(126, 128)));
+        int[] skill = {hex2num(data.substring(120, 122)), hex2num(data.substring(122, 124)), hex2num(data.substring(124, 126)), hex2num(data.substring(126, 128))};
         attr.put("skill", skill);
         attr.put("hp_max", hex2num(data.substring(144, 148)));
         attr.put("hp_now", hex2num(data.substring(148, 152)));
@@ -180,16 +84,53 @@ public class ContaModel {
         attr.put("mount", get_item(data.substring(408, 424)));
         attr.put("cape", get_item(data.substring(424, 440)));
         attr.put("frag_now", hex2num(data.substring(1454, 1456)));
-        attr.put("frag_max", hex2num(data.substring(1458, 1460)));
-        attr.put("pt_attr", hex2num(data.substring(1472, 1478)));
-        attr.put("pt_espec", hex2num(data.substring(1476, 1482)));
-        attr.put("pt_skill", hex2num(data.substring(1480, 1486)));
+        attr.put("frag_max",hex2num(data.substring(1458, 1460)));
+        attr.put("pt_attr", hex2num(data.substring(1472, 1476)));
+        attr.put("pt_espec", hex2num(data.substring(1476, 1480)));
+        attr.put("pt_skill", hex2num(data.substring(1480, 1484)));
+
         attr.put("hp_regen", hex2num(data.substring(1500, 1502)));
         attr.put("mp_regen", hex2num(data.substring(1502, 1504)));
+
         attr.put("res1", hex2num(data.substring(1504, 1506)));
         attr.put("res2", hex2num(data.substring(1506, 1508)));
         attr.put("res3", hex2num(data.substring(1508, 1510)));
         attr.put("res4", hex2num(data.substring(1510, 1512)));
-        return attr;
+
+        Map<String, Object> char_ready = new HashMap<>();
+        char_ready.put("attr", attr);
+
+        return char_ready;
+    }
+    public Map<String, Integer> get_item(String data) {
+        String item = data.substring(0, 4);
+        if (item.equals("0000")) {
+            return null;
+        }
+        Map<String, Integer> itemMap = new HashMap<>();
+        itemMap.put("item", hex2num(item));
+        itemMap.put("att1", hex2num(data.substring(4, 6)));
+        itemMap.put("val1", hex2num(data.substring(6, 8)));
+        itemMap.put("att2", hex2num(data.substring(8, 10)));
+        itemMap.put("val2", hex2num(data.substring(10, 12)));
+        itemMap.put("att3", hex2num(data.substring(12, 14)));
+        itemMap.put("val3", hex2num(data.substring(14, 16)));
+        return itemMap;
+    }
+
+
+    // acho que fica mais fácil converter dos bytes direto
+
+
+    // REVISADO OK
+    public void read(String account, String full) {
+        Map<String, Object> dados = null;
+        try {
+            dados = ContaUtils.read(dirAccount, account,full);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.bytesAccount = (byte[]) dados.get("bytesAccount");
+        this.stringAccount = (String) dados.get("stringAccount");
     }
 }

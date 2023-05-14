@@ -79,11 +79,11 @@ public class OnlyRead {
             return new Gson().toJson(GenericReturn.builder().isSucess(false).descricao(ex.getMessage()).build());
         }
     }
-    public String getDadosConta(String conta){
+    public String getDadosConta(String account){
         ContaModel model = new ContaModel(dirAccount);
-        model.read("admin", "full");
-        Map<String, Object> dados = model.accountChar(3);
-        return new Gson().toJson(dados);
+        model.read(account, "full");
+        Map<String, Object> dadosChar = model.getAccountChar(2);
+        return new Gson().toJson(dadosChar);
     }
 
 
